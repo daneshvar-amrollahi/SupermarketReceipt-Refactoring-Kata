@@ -50,14 +50,14 @@ public class ShoppingCart {
     private Discount makeDiscount(Product p, double quantity, Offer offer, double unitPrice) {
         int quantityDenominator = getQuantityDenominator(offer);
         int quantityFloored = (int) quantity;
-        int discountCoefficient = quantityFloored / quantityDenominator;
+        int discountedQuantity = quantityFloored / quantityDenominator;
     
         if (offer.offerType == SpecialOfferType.TwoForAmount && quantityFloored >= 2) {
-            double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + (quantityFloored % 2) * unitPrice);
+            double discountAmount = unitPrice * quantity - (offer.argument * discountedQuantity + (quantityFloored % 2) * unitPrice);
             return new Discount(p, "2 for " + offer.argument, -discountAmount);
         }
         if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityFloored > 2) {
-            double discountAmount = quantity * unitPrice - ((discountCoefficient * 2 * unitPrice) + quantityFloored % 3 * unitPrice);
+            double discountAmount = quantity * unitPrice - ((discountedQuantity * 2 * unitPrice) + quantityFloored % 3 * unitPrice);
             return new Discount(p, "3 for 2", -discountAmount);
         }
         if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
@@ -65,7 +65,7 @@ public class ShoppingCart {
             return new Discount(p, offer.argument + "% off", -discountAmount);
         }
         if (offer.offerType == SpecialOfferType.FiveForAmount && quantityFloored >= 5) {
-            double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + quantityFloored % 5 * unitPrice);
+            double discountAmount = unitPrice * quantity - (offer.argument * discountedQuantity + quantityFloored % 5 * unitPrice);
             return new Discount(p, quantityDenominator + " for " + offer.argument, -discountAmount);
         }
 
