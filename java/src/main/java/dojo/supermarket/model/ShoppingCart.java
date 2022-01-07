@@ -44,18 +44,13 @@ public class ShoppingCart {
             double unitPrice = catalog.getUnitPrice(p);
             int quantityAsInt = (int) quantity;
             Discount discount = null;
-            int x = 1;
-            if (offer.offerType == SpecialOfferType.ThreeForTwo) {
-                x = 3;
-            } if (offer.offerType == SpecialOfferType.TwoForAmount) {
-                x = 2;
-            } if (offer.offerType == SpecialOfferType.FiveForAmount) {
-                x = 5;
-            }
-            int numberOfXs = quantityAsInt / x;
+            
+            int quantityDenominator = getQuantityDenominator(offer);
+            int numberOfXs = quantityAsInt / quantityDenominator;
 
             if (offer.offerType == SpecialOfferType.TwoForAmount && quantityAsInt >= 2) {
-                int intDivision = quantityAsInt / x;
+                // int intDivision = quantityAsInt / x;
+                int intDivision = numberOfXs;
                 double pricePerUnit = offer.argument * intDivision;
                 double theTotal = (quantityAsInt % 2) * unitPrice;
                 double total = pricePerUnit + theTotal;
@@ -72,11 +67,24 @@ public class ShoppingCart {
             }
             if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
                 double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                discount = new Discount(p, x + " for " + offer.argument, -discountTotal);
+                discount = new Discount(p, quantityDenominator + " for " + offer.argument, -discountTotal);
             }
             if (discount != null)
                 receipt.addDiscount(discount);
 
+        }
+    }
+
+    private int getQuantityDenominator(Offer offer) {
+        switch (offer.offerType) {
+            case TwoForAmount:
+                return 2;
+            case ThreeForTwo:
+                return 3;
+            case FiveForAmount:
+                return 5;
+            default:
+                return 1;
         }
     }
 }
