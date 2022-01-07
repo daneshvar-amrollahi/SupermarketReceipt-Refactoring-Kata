@@ -49,25 +49,20 @@ public class ShoppingCart {
             int numberOfXs = quantityAsInt / quantityDenominator;
 
             if (offer.offerType == SpecialOfferType.TwoForAmount && quantityAsInt >= 2) {
-                // int intDivision = quantityAsInt / x;
-                int intDivision = numberOfXs;
-                double pricePerUnit = offer.argument * intDivision;
-                double theTotal = (quantityAsInt % 2) * unitPrice;
-                double total = pricePerUnit + theTotal;
-                double discountN = unitPrice * quantity - total;
-                discount = new Discount(p, "2 for " + offer.argument, -discountN);
+                double discountAmount = unitPrice * quantity - (offer.argument * numberOfXs + (quantityAsInt % 2) * unitPrice);
+                discount = new Discount(p, "2 for " + offer.argument, -discountAmount);
             }
-
             if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
                 double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
                 discount = new Discount(p, "3 for 2", -discountAmount);
             }
             if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-                discount = new Discount(p, offer.argument + "% off", -quantity * unitPrice * offer.argument / 100.0);
+                double discountAmount = quantity * unitPrice * offer.argument / 100.0;
+                discount = new Discount(p, offer.argument + "% off", -discountAmount);
             }
             if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
-                double discountTotal = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-                discount = new Discount(p, quantityDenominator + " for " + offer.argument, -discountTotal);
+                double discountAmount = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
+                discount = new Discount(p, quantityDenominator + " for " + offer.argument, -discountAmount);
             }
             if (discount != null)
                 receipt.addDiscount(discount);
