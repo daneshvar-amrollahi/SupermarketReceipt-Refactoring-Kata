@@ -62,7 +62,7 @@ public class ShoppingCart {
         }
         if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
             double discountAmount = quantity * unitPrice * offer.argument / 100.0;
-            return new Discount(p, offer.argument + "% off", -discountAmount);
+            return new Discount(p, "10.0% off", -discountAmount);
         }
         if (offer.offerType == SpecialOfferType.FiveForAmount && quantityFloored >= 5) {
             double discountAmount = unitPrice * quantity - (offer.argument * discountedQuantity + quantityFloored % 5 * unitPrice);
