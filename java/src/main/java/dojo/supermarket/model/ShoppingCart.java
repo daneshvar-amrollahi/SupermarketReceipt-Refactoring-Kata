@@ -52,28 +52,28 @@ public class ShoppingCart {
         int quantityFloored = (int) quantity;
         int discountedQuantity = quantityFloored / quantityDenominator;
     
-        if (offer.offerType == SpecialOfferType.TwoForAmount && quantityFloored >= 2) {
-            double discountAmount = unitPrice * quantity - (offer.specialPrice * discountedQuantity + (quantityFloored % 2) * unitPrice);
-            return new Discount(p, "2 for " + offer.specialPrice, -discountAmount);
+        if (offer.getOfferType() == SpecialOfferType.TwoForAmount && quantityFloored >= 2) {
+            double discountAmount = unitPrice * quantity - (offer.getSpecialPrice() * discountedQuantity + (quantityFloored % 2) * unitPrice);
+            return new Discount(p, "2 for " + offer.getSpecialPrice(), -discountAmount);
         }
-        if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityFloored > 2) {
+        if (offer.getOfferType() == SpecialOfferType.ThreeForTwo && quantityFloored > 2) {
             double discountAmount = quantity * unitPrice - ((discountedQuantity * 2 * unitPrice) + quantityFloored % 3 * unitPrice);
             return new Discount(p, "3 for 2", -discountAmount);
         }
-        if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-            double discountAmount = quantity * unitPrice * offer.specialPrice / 100.0;
+        if (offer.getOfferType() == SpecialOfferType.TenPercentDiscount) {
+            double discountAmount = quantity * unitPrice * offer.getSpecialPrice() / 100.0;
             return new Discount(p, "10.0% off", -discountAmount);
         }
-        if (offer.offerType == SpecialOfferType.FiveForAmount && quantityFloored >= 5) {
-            double discountAmount = unitPrice * quantity - (offer.specialPrice * discountedQuantity + quantityFloored % 5 * unitPrice);
-            return new Discount(p, quantityDenominator + " for " + offer.specialPrice, -discountAmount);
+        if (offer.getOfferType() == SpecialOfferType.FiveForAmount && quantityFloored >= 5) {
+            double discountAmount = unitPrice * quantity - (offer.getSpecialPrice() * discountedQuantity + quantityFloored % 5 * unitPrice);
+            return new Discount(p, quantityDenominator + " for " + offer.getSpecialPrice(), -discountAmount);
         }
 
         return null;
     }
 
     private int getQuantityDenominator(Offer offer) {
-        switch (offer.offerType) {
+        switch (offer.getOfferType()) {
             case TwoForAmount:
                 return 2;
             case ThreeForTwo:
