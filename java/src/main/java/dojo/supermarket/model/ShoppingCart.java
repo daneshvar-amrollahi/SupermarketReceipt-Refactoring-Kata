@@ -46,14 +46,14 @@ public class ShoppingCart {
             Discount discount = null;
             
             int quantityDenominator = getQuantityDenominator(offer);
-            int numberOfXs = quantityAsInt / quantityDenominator;
+            int discountCoefficient = quantityAsInt / quantityDenominator;
 
             if (offer.offerType == SpecialOfferType.TwoForAmount && quantityAsInt >= 2) {
-                double discountAmount = unitPrice * quantity - (offer.argument * numberOfXs + (quantityAsInt % 2) * unitPrice);
+                double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + (quantityAsInt % 2) * unitPrice);
                 discount = new Discount(p, "2 for " + offer.argument, -discountAmount);
             }
             if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
-                double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
+                double discountAmount = quantity * unitPrice - ((discountCoefficient * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
                 discount = new Discount(p, "3 for 2", -discountAmount);
             }
             if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
@@ -61,7 +61,7 @@ public class ShoppingCart {
                 discount = new Discount(p, offer.argument + "% off", -discountAmount);
             }
             if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
-                double discountAmount = unitPrice * quantity - (offer.argument * numberOfXs + quantityAsInt % 5 * unitPrice);
+                double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + quantityAsInt % 5 * unitPrice);
                 discount = new Discount(p, quantityDenominator + " for " + offer.argument, -discountAmount);
             }
             if (discount != null)
