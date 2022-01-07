@@ -35,39 +35,41 @@ public class ShoppingCart {
 
     void handleOffers(Receipt receipt, Map<Product, Offer> offers, SupermarketCatalog catalog) {
         for (Product p: productQuantities().keySet()) {
-            if (!offers.containsKey(p)) {
+            if (!offers.containsKey(p))
                 continue;
-            }
-            
+
             double quantity = productQuantities.get(p);
             Offer offer = offers.get(p);
-            double unitPrice = catalog.getUnitPrice(p);
-            int quantityAsInt = (int) quantity;
-            Discount discount = null;
-            
-            int quantityDenominator = getQuantityDenominator(offer);
-            int discountCoefficient = quantityAsInt / quantityDenominator;
-
-            if (offer.offerType == SpecialOfferType.TwoForAmount && quantityAsInt >= 2) {
-                double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + (quantityAsInt % 2) * unitPrice);
-                discount = new Discount(p, "2 for " + offer.argument, -discountAmount);
-            }
-            if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityAsInt > 2) {
-                double discountAmount = quantity * unitPrice - ((discountCoefficient * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-                discount = new Discount(p, "3 for 2", -discountAmount);
-            }
-            if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
-                double discountAmount = quantity * unitPrice * offer.argument / 100.0;
-                discount = new Discount(p, offer.argument + "% off", -discountAmount);
-            }
-            if (offer.offerType == SpecialOfferType.FiveForAmount && quantityAsInt >= 5) {
-                double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + quantityAsInt % 5 * unitPrice);
-                discount = new Discount(p, quantityDenominator + " for " + offer.argument, -discountAmount);
-            }
+            double unitPrice = catalog.getUnitPrice(p);            
+            Discount discount = makeDiscount(p, quantity, offer, unitPrice);
             if (discount != null)
                 receipt.addDiscount(discount);
-
         }
+    }
+
+    private Discount makeDiscount(Product p, double quantity, Offer offer, double unitPrice) {
+        int quantityDenominator = getQuantityDenominator(offer);
+        int quantityFloored = (int) quantity;
+        int discountCoefficient = quantityFloored / quantityDenominator;
+    
+        if (offer.offerType == SpecialOfferType.TwoForAmount && quantityFloored >= 2) {
+            double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + (quantityFloored % 2) * unitPrice);
+            return new Discount(p, "2 for " + offer.argument, -discountAmount);
+        }
+        if (offer.offerType == SpecialOfferType.ThreeForTwo && quantityFloored > 2) {
+            double discountAmount = quantity * unitPrice - ((discountCoefficient * 2 * unitPrice) + quantityFloored % 3 * unitPrice);
+            return new Discount(p, "3 for 2", -discountAmount);
+        }
+        if (offer.offerType == SpecialOfferType.TenPercentDiscount) {
+            double discountAmount = quantity * unitPrice * offer.argument / 100.0;
+            return new Discount(p, offer.argument + "% off", -discountAmount);
+        }
+        if (offer.offerType == SpecialOfferType.FiveForAmount && quantityFloored >= 5) {
+            double discountAmount = unitPrice * quantity - (offer.argument * discountCoefficient + quantityFloored % 5 * unitPrice);
+            return new Discount(p, quantityDenominator + " for " + offer.argument, -discountAmount);
+        }
+
+        return null;
     }
 
     private int getQuantityDenominator(Offer offer) {
